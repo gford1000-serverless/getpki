@@ -6,16 +6,12 @@ import (
 	util "github.com/gford1000-serverless/util/events"
 )
 
-func AddResponseHeaders() map[string]string {
-	return map[string]string{"Content-Type": "application/json"}
-}
-
 // CreateUnencrypted generates a new pair of RSA keys, of the specified size
-func CreateUnencrypted(size int) (*events.APIGatewayProxyResponse, error) {
+func CreateUnencrypted(size int, responder *util.GatewayProxyResponder) (*events.APIGatewayProxyResponse, error) {
 	b, err := pkigen.CreateEncodedRSAKey(size)
 	if err != nil {
-		return util.NewErrorAPIResponse(500, AddResponseHeaders, err), nil
+		return responder.NewErrorAPIResponse(500, err), nil
 	}
 
-	return util.NewAPIResponse(200, AddResponseHeaders, b)
+	return responder.NewAPIResponse(200, b)
 }

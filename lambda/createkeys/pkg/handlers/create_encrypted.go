@@ -12,10 +12,10 @@ var errInvalidArgument = errors.New("unexpected argument provided")
 
 // CreateEncrypted expects to receive a Base64 encoded RSA public key, which it
 // will then be used to encrypt the randomly generated RSA key pair of the specified size
-func CreateEncrypted(event interface{}, size int) (*events.APIGatewayProxyResponse, error) {
+func CreateEncrypted(event interface{}, size int, responder *util.GatewayProxyResponder) (*events.APIGatewayProxyResponse, error) {
 	encData, ok := event.(*keyRequestEvent)
 	if !ok {
-		return util.NewErrorAPIResponse(500, AddResponseHeaders, errInvalidArgument), nil
+		return responder.NewErrorAPIResponse(500, errInvalidArgument), nil
 	}
 
 	k, err := pkigen.UnmarshalPublicKey(
@@ -23,13 +23,13 @@ func CreateEncrypted(event interface{}, size int) (*events.APIGatewayProxyRespon
 			PublicKey: encData.PublicKey,
 		})
 	if err != nil {
-		return util.NewErrorAPIResponse(400, AddResponseHeaders, err), nil
+		return responder.NewErrorAPIResponse(400, err), nil
 	}
 
 	e, err := pkigen.CreateEncryptedRSAKey(k, size)
 	if err != nil {
-		return util.NewErrorAPIResponse(400, AddResponseHeaders, err), nil
+		return responder.NewErrorAPIResponse(400, err), nil
 	}
 
-	return util.NewAPIResponse(200, AddResponseHeaders, e)
+	return responder.NewAPIResponse(200, e)
 }

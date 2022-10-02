@@ -15,6 +15,8 @@ import (
 // Default to 2048
 var size = 2048
 
+var responder *util.GatewayProxyResponder
+
 func init() {
 	// Size can be changed via a Lambda environment variable
 	s := os.Getenv("RSA_SIZE")
@@ -25,6 +27,10 @@ func init() {
 		}
 		size = i
 	}
+
+	// Load and set signing key here, to sign responses
+	responder = util.NewGatewayProxyResponder(nil)
+	responder.AddHeader("Content-Type", "application/json")
 }
 
 var errInvalidHTTPMethod = errors.New("only GET or POST requests supported")
@@ -33,20 +39,20 @@ func handleRequest(ctx context.Context, event events.APIGatewayProxyRequest) (*e
 
 	// Always respond to a GET request
 	if event.HTTPMethod == "GET" {
-		return handlers.CreateUnencrypted(size)
+		return handlers.CreateUnencrypted(size, responder)
 	}
 
 	// Otherwise must be a POST request, containing a valid body
 	if event.HTTPMethod != "POST" {
-		return util.NewErrorAPIResponse(400, handlers.AddResponseHeaders, errInvalidHTTPMethod), nil
+		return responder.NewErrorAPIResponse(400, errInvalidHTTPMethod), nil
 	}
 
 	body, err := handlers.Unpack(event.Body)
 	if err != nil {
-		return util.NewErrorAPIResponse(400, handlers.AddResponseHeaders, err), nil
+		return responder.NewErrorAPIResponse(400, err), nil
 	}
 
-	return handlers.CreateEncrypted(body, size)
+	return handlers.CreateEncrypted(body, size, responder)
 }
 
 func main() {
