@@ -1,11 +1,11 @@
 package handlers
 
 import (
-	"createkeys/pkg/util"
 	"errors"
 
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/gford1000-go/pkigen"
+	util "github.com/gford1000-serverless/util/events"
 )
 
 var errInvalidArgument = errors.New("unexpected argument provided")
@@ -15,7 +15,7 @@ var errInvalidArgument = errors.New("unexpected argument provided")
 func CreateEncrypted(event interface{}, size int) (*events.APIGatewayProxyResponse, error) {
 	encData, ok := event.(*keyRequestEvent)
 	if !ok {
-		return util.NewErrorAPIResponse(500, errInvalidArgument), nil
+		return util.NewErrorAPIResponse(500, AddResponseHeaders, errInvalidArgument), nil
 	}
 
 	k, err := pkigen.UnmarshalPublicKey(
@@ -23,13 +23,13 @@ func CreateEncrypted(event interface{}, size int) (*events.APIGatewayProxyRespon
 			PublicKey: encData.PublicKey,
 		})
 	if err != nil {
-		return util.NewErrorAPIResponse(400, err), nil
+		return util.NewErrorAPIResponse(400, AddResponseHeaders, err), nil
 	}
 
 	e, err := pkigen.CreateEncryptedRSAKey(k, size)
 	if err != nil {
-		return util.NewErrorAPIResponse(400, err), nil
+		return util.NewErrorAPIResponse(400, AddResponseHeaders, err), nil
 	}
 
-	return util.NewAPIResponse(200, e)
+	return util.NewAPIResponse(200, AddResponseHeaders, e)
 }

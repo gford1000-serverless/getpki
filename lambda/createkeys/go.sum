@@ -2,3 +2,5 @@ github.com/aws/aws-lambda-go v1.34.1 h1:M3a/uFYBjii+tDcOJ0wL/WyFi2550FHoECdPf27z
 github.com/aws/aws-lambda-go v1.34.1/go.mod h1:jwFe2KmMsHmffA1X2R09hH6lFzJQxzI8qK17ewzbQMM=
 github.com/gford1000-go/pkigen v0.0.0-20221001173721-fde2e23cc7a2 h1:Wrg/zNc2cbdGfBViT4sX1pFWzQ8f2CObPbZgYoexYC4=
 github.com/gford1000-go/pkigen v0.0.0-20221001173721-fde2e23cc7a2/go.mod h1:/cklRatEDD6laA+exmSHxCzcOomCatdlZAazbLbIG6U=
+github.com/gford1000-serverless/util v0.0.0-20221002153325-f499de1f89ef h1:Ghd+E6S3wzV5sVJOsglczEy0W1H1WLYFMQracMgXU+I=
+github.com/gford1000-serverless/util v0.0.0-20221002153325-f499de1f89ef/go.mod h1:h8tds0bwD8/66Dt4Z5pBpCEzJUTVL3LkBWIpzhBb6vg=
